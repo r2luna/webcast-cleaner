@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css">
+
+    <title>WebCast Cleaner</title>
+</head>
+
+<body class="max-w-screen-xl mx-auto py-16 px-4 sm:px-6 lg:px-8 bg-gray-900">
+    <h1 class="text-4xl text-gray-100 font-medium tracking-wide mb-10 text-center">Webcast Cleaner</h1>
+
+    <div class="flex space-x-4">
+        <div class="w-1/2 text-left">
+            <div class="bg-white overflow-hidden sm:rounded-t-lg sm:shadow z-100">
+                <div class="px-6 py-3 bg-gray-50 ">
+                    <h3 class="text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        Copy and past the list of Individual Site here
+                    </h3>
+                </div>
+            </div>
+            <textarea name="raw" id="raw" rows="40"
+                class="focus:outline-none p-4 text-gray-800 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5 pin-b rounded-b-lg"></textarea>
+        </div>
+
+        <div class="w-1/2 space-y-4">
+            <div class="flex space-x-4">
+                <button type="button" onclick="clean()"
+                    class="uppercase inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out duration-150">
+                    clean
+                </button>
+            </div>
+
+            <div class="flex flex-col">
+                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg hidden" id="card-table">
+                            <table class="min-w-full divide-y divide-gray-200 " id="result-table">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                            Family
+                                        </th>
+                                        <th
+                                            class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                            Device
+                                        </th>
+                                        <th
+                                            class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                            Viewing Stage
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function clean() {
+            var info = document.getElementById('raw').value;
+            var split = info.split('\n');
+            var rows = [];
+
+            if (split[3] !== undefined) {
+                for (let index = 3; index <= split.length; index += 4) {
+                    if(split[index] === undefined) {
+                        break;
+                    }
+
+                    var name = split[index - 3];
+                    var device = split[index - 2].replace('Device: ', '');
+                    var viewing = split[index].replace('Viewing State: ','');
+
+                    rows.push({name, device, viewing});
+                }
+            }
+
+            buildTable(rows);
+        }
+
+        function buildTable(rows) {
+            var table = document.getElementById('result-table');
+            var body = table.getElementsByTagName('tbody')[0];
+
+            rows.forEach(element => {
+                var row = body.insertRow(0);
+                var cellName = row.insertCell(0);
+                var cellDevice = row.insertCell(1);
+                var cellViewing = row.insertCell(2);
+
+                cellName.innerHTML = element.name;
+                cellDevice.innerHTML = element.device;
+                cellViewing.innerHTML = element.viewing;
+
+                row.classList.add('bg-white');
+                cellName.classList.add('px-6', 'py-4', 'whitespace-no-wrap', 'text-sm', 'leading-5', 'text-gray-500');
+                cellDevice.classList.add('px-6', 'py-4', 'whitespace-no-wrap', 'text-sm', 'leading-5', 'text-gray-500');
+                cellViewing.classList.add('px-6', 'py-4', 'whitespace-no-wrap', 'text-sm', 'leading-5', 'text-gray-500');
+            });
+
+            document.getElementById('card-table').classList.remove('hidden');
+        }
+    </script>
+</body>
+
+</html>
